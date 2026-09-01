@@ -1,26 +1,23 @@
-# Lab 1: Requirements Engineering & UML Use-Case Modelling
+## Lab 2 – Agile Backlog Creation & Sprint Simulation in Jira
 
-**Problem Statement #35 (Retail, E-Commerce & Finance) — Customizable Subscription Box Scheduler**
+**Name:** Rhea Menon
+**SRN:** PES1UG24AM222
+**Scenario:** Problem Statement #35 – Customizable Subscription Box Scheduler
 
-> A subscription box portal where subscribers customize monthly product selections (e.g., books, coffee, snacks) based on preference tags, with support for pausing or skipping billing cycles.
->
-> **Target Stakeholders / Actors:** Subscriber, Fulfillment Lead (Payment Gateway is modelled as a supporting system actor — see `requirements-table.docx`).
+This is my Lab 2 submission, built off my own Lab 1 scenario instead of the coffee kiosk example from the handout.
 
-## Contents
+### What's in here
 
-| File | Deliverable |
-|---|---|
-| [`requirements-table.docx`](./requirements-table.docx) | Complete requirements table — 5 FRs (FR-001–FR-005) + 2 NFRs (NFR-001, NFR-002), each with Req ID, Type, Description, Priority, Acceptance Criteria, and Rationale. Also lists all actors and use cases. |
-| [`uml-diagram.pdf`](./uml-diagram.pdf) | UML use-case diagram — actors (1 primary, 2 secondary), 7 use cases, and the required `<<include>>` / `<<extend>>` relationships. |
-| [`use-case-flow.docx`](./use-case-flow.docx) | One-page use-case flow specification for UC-02 "Swap or Pause Monthly Delivery" — preconditions, postconditions, main success scenario, and one alternate flow. |
-| `usecase.puml` | PlantUML source for the diagram, kept for reference/edits. |
+- `lab2_PES1UG24AM222.docx` / `.pdf` – the write-up: all 4 epics and 7 user stories, backlog/sprint screenshots from Jira, and a short reflection at the end.
 
-## Summary
+### What I did
 
-- **FR-001** and **NFR-001** were given in the problem statement; FR-002–FR-005 and NFR-002 were elicited from the scenario.
-- **`<<include>>`**: UC-04 "Process Monthly Payment" always includes UC-06 "Validate Payment Details."
-- **`<<extend>>`**: UC-07 "Apply Promotional Discount" optionally extends UC-04 "Process Monthly Payment," applying only when a valid promo code is present.
+- Set up a Scrum space in Jira (`UAPI board`) with Epic, Story, Bug, and Task work types
+- Turned my 5 functional + 2 non-functional requirements from Lab 1 into 4 epics and 7 user stories
+- Estimated each story with Fibonacci points and set priorities (High/Medium/Low)
+- Prioritized and ranked the backlog
+- Created Sprint 1, moved all 7 stories in (50 points total), and started it
+- Simulated progress by moving a few stories to In Progress/Done and adding comments
+- Pulled up the Burndown Chart report for the sprint
 
-## Author
-
-Rhea — fill in Name / SRN / Section in `requirements-table.docx` before submitting.
+Full details and screenshots are in the docx/pdf above.
