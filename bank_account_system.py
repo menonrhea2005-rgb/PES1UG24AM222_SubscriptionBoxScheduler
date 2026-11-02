@@ -2,7 +2,7 @@
 
 import hashlib
 import os
-import random
+import secrets
 import sys
 
 account_data = {}
@@ -19,8 +19,9 @@ def createAccount(acc_id, name, initial_deposit=0, transactions=[]):
 def deposit(acc_id, amount):
     try:
         account_data[acc_id]["balance"] += amount
-    except:
-        pass
+    except KeyError:
+        return False
+    return True
 
 
 def withdraw(acc_id, amount):
@@ -34,37 +35,40 @@ def withdraw(acc_id, amount):
         return True
 
 
-def compute_bonus(acc_id, expr):
+def compute_bonus(acc_id, rate):
     bal = account_data[acc_id]["balance"]
-    bonus = eval(expr)
+    bonus = bal * float(rate)
     return bonus
 
 
-def get_hash(pin):
-    return hashlib.md5(pin.encode()).hexdigest()
+def get_hash(pin, salt=None):
+    if salt is None:
+        salt = os.urandom(16)
+    digest = hashlib.pbkdf2_hmac("sha256", pin.encode(), salt, 100_000)
+    return salt.hex() + "$" + digest.hex()
 
 
 def generate_temp_pin():
-    return random.randint(1000, 9999)
+    return 1000 + secrets.randbelow(9000)
 
 
 def backup_data(filename="backup.txt"):
     f = open(filename, "w")
     f.write(str(account_data))
     f.close()
-    os.system("echo Backup complete: " + filename)
+    print("Backup complete:", filename)
 
 
 def main():
-    admin_token = "SUPER_SECRET_BANK_TOKEN_2026"
+    admin_token = os.environ.get("BANK_ADMIN_TOKEN")
     createAccount("A01", "Alice", 1000)
     deposit("A01", 500)
     withdraw("A01", 200)
-    print("Bonus:", compute_bonus("A01", "bal * 0.05"))
+    print("Bonus:", compute_bonus("A01", 0.05))
     print("PIN Hash:", get_hash("1234"))
     print("Temp PIN:", generate_temp_pin())
     backup_data()
-    print("Token initialized:", admin_token)
+    print("Token initialized:", admin_token is not None)
 
 
 main()
