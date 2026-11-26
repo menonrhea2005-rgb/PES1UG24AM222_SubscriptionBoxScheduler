@@ -8,6 +8,8 @@ WHITE = (255, 255, 255)
 GREEN = (0, 150, 0)
 
 class GameEngine:
+    COLLISION_STEP_PX = 2  # max pixels moved between collision checks
+
     def __init__(self, width, height):
         self.width = width
         self.height = height
@@ -38,6 +40,7 @@ class GameEngine:
         if self.game_over:
             return
 
+        prev_y = self.bird.y
         self.bird.update()
 
         if self.bird.y - self.bird.radius <= 0 or self.bird.y + self.bird.radius >= self.height:
@@ -49,16 +52,23 @@ class GameEngine:
             self._spawn_timer = 0
             self.pipes.append(Pipe(self.width, self.height, speed=self.pipe_speed))
 
-        for pipe in self.pipes:
-            pipe.move()
+        # Task 1: accurate collision.
+        # Test the bird's full circle (not just its centre) against each pipe,
+        # and split this frame's movement into small sub-steps so that at high
+        # pipe speeds / fall speeds nothing can jump past an edge between frames.
+        max_move = max(self.pipe_speed, abs(self.bird.y - prev_y))
+        steps = max(1, int(max_move // self.COLLISION_STEP_PX) + 1)
 
-            # NOTE: collision only checks the bird's single center point
-            # against the pipe rects, rather than the bird's full rect.
-            # At higher pipe speeds the bird can visually clip a pipe's
-            # edge for a frame or two without this ever registering a
-            # hit. See Task 1 in the README.
-            if pipe.top_rect().collidepoint(self.bird.center()) or pipe.bottom_rect().collidepoint(self.bird.center()):
-                self.game_over = True
+        for pipe in self.pipes:
+            start_x = pipe.x
+            for i in range(1, steps + 1):
+                t = i / steps
+                pipe.x = start_x - pipe.speed * t
+                bird_y = prev_y + (self.bird.y - prev_y) * t
+                if pipe.collides_with_circle(self.bird.x, bird_y, self.bird.radius):
+                    self.game_over = True
+                    break
+            pipe.x = start_x - pipe.speed  # same end position as pipe.move()
 
             if not pipe.scored and pipe.x + pipe.width < self.bird.x:
                 pipe.scored = True
