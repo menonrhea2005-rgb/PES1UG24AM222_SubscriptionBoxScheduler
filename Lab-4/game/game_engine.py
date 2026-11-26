@@ -1,3 +1,5 @@
+import math
+
 import pygame
 from .bird import Bird
 from .pipe import Pipe
@@ -60,6 +62,11 @@ class GameEngine:
         self.score = 0
         self.game_over = False
         self._game_over_frames = 0
+        # Wait for the first flap before gravity/pipes start, otherwise the
+        # bird falls to the ground before the player can react (the window
+        # often doesn't even have keyboard focus yet when the game starts).
+        self.started = False
+        self._idle_frames = 0
 
     def _new_pipe(self, x):
         return Pipe(x, self.height, gap=self.pipe_gap, speed=self.pipe_speed)
@@ -73,6 +80,7 @@ class GameEngine:
         # Flap is edge-triggered (KEYDOWN / MOUSEBUTTONDOWN), not held.
         if (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE) \
                 or event.type == pygame.MOUSEBUTTONDOWN:
+            self.started = True  # first flap starts the round
             self.bird.flap()
             self.sounds.play_flap()
 
@@ -111,6 +119,12 @@ class GameEngine:
     def update(self):
         if self.game_over:
             self._game_over_frames += 1
+            return
+
+        if not self.started:
+            # "Get Ready": bird hovers gently in place, pipes don't move
+            self._idle_frames += 1
+            self.bird.y = self.height // 2 + 8 * math.sin(self._idle_frames / 10)
             return
 
         prev_y = self.bird.y
@@ -168,6 +182,10 @@ class GameEngine:
             screen.blit(score_text, (10, 10))
             diff = self.small_font.render(self.difficulty, True, DIFFICULTIES[self.difficulty]["color"])
             screen.blit(diff, diff.get_rect(topright=(self.width - 10, 16)))
+            if not self.started:
+                self._blit_centered(screen, self.big_font, "GET READY", WHITE, self.height // 3)
+                self._blit_centered(screen, self.font, "Press SPACE or click to flap", WHITE,
+                                    self.height // 3 + 60)
 
     def _blit_centered(self, screen, font, text, color, y):
         surf = font.render(text, True, color)
