@@ -11,11 +11,10 @@ A Pygame Flappy Bird clone. The starter code was only partly working, so I used 
 
 | Item | File / link |
 | --- | --- |
-| Video **before** the changes (10 s) | `videos/before.mp4` |
-| Video **after** the changes (10 s) | `videos/after.mp4` |
+| Video **before** the changes | `before.mov .mp4` |
+| Video **after** the changes | `after.mov.mp4`, `after1.mp4` |
 | Updated code | `main.py`, `game/` |
-| Chat history (exported) | `chat_history.pdf` |
-
+| Chat history (exported) | `chat history .pdf` |
 ## How to run
 
 ```bash
