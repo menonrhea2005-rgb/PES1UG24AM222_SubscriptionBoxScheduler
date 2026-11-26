@@ -1,6 +1,7 @@
 import pygame
 from .bird import Bird
 from .pipe import Pipe
+from .sounds import SoundManager
 
 # Game Engine
 
@@ -37,6 +38,7 @@ class GameEngine:
         self.big_font = pygame.font.SysFont("Arial", 56, bold=True)
         self.small_font = pygame.font.SysFont("Arial", 22)
 
+        self.sounds = SoundManager()  # Task 4: flap / score / die sounds
         self.quit_requested = False  # main loop exits when this is True
         self.difficulty = "Medium"   # the original game's settings
         self._buttons = {}           # label -> Rect, built when Game Over is drawn
@@ -69,10 +71,10 @@ class GameEngine:
             return
 
         # Flap is edge-triggered (KEYDOWN / MOUSEBUTTONDOWN), not held.
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+        if (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE) \
+                or event.type == pygame.MOUSEBUTTONDOWN:
             self.bird.flap()
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            self.bird.flap()
+            self.sounds.play_flap()
 
     def _handle_game_over_event(self, event):
         # Ignore input for a moment so a panicked flap doesn't skip the screen.
@@ -101,6 +103,8 @@ class GameEngine:
 
     # ----------------------------------------------------------------- update
     def _end_game(self):
+        if not self.game_over:
+            self.sounds.play_die()
         self.game_over = True
         self._game_over_frames = 0
 
@@ -145,6 +149,7 @@ class GameEngine:
             if not self.game_over and not pipe.scored and pipe.x + pipe.width < self.bird.x:
                 pipe.scored = True
                 self.score += 1
+                self.sounds.play_score()
 
         self.pipes = [p for p in self.pipes if not p.off_screen()]
 
