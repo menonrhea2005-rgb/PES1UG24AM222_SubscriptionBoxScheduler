@@ -1,97 +1,93 @@
-# Real-Time Flappy Bird Clone
+# Lab 4 – Vibe Coding: Real-Time Flappy Bird Clone
 
-This project is a terminal-based Flappy Bird clone using **Pygame**. It introduces students to interactive game design using object-oriented principles and real-time graphical rendering.
+**Name:** Rhea Menon
+**SRN:** PES1UG24AM222
+**Assigned repo:** [SETAPESU26/40_flappy-bird](https://github.com/SETAPESU26/40_flappy-bird)
+**LLM used:** Claude
 
----
+A Pygame Flappy Bird clone. The starter code was only partly working, so I used an LLM as a pair programmer to fix the bugs and add all the features listed in the original README. Each task is its own commit.
 
-## What’s Provided
+## Deliverables
 
-A partially working version of a Flappy Bird game with:
+| Item | File / link |
+| --- | --- |
+| Video **before** the changes (10 s) | `videos/before.mp4` |
+| Video **after** the changes (10 s) | `videos/after.mp4` |
+| Updated code | `main.py`, `game/` |
+| Chat history (exported) | `chat_history.pdf` |
 
-- A player-controlled bird affected by gravity, with a flap on key/click
-- Scrolling pipes with a randomized gap
-- Score display
-
-You are expected to **analyze**, **interact with an AI assistant**, and **complete/fix** the game to make it fully functional.
-
-### **Use an LLM (e.g. ChatGPT or Claude) as your debugging and pair-programming partner for this lab.**
-
----
-
-## Getting Started
-
-### Setup
-
-1. Clone the repo or download the project folder.
-2. Make sure you have Python 3.10+ installed.
-3. Install dependencies:
+## How to run
 
 ```bash
 pip install -r requirements.txt
-```
-
-4. Run the game:
-
-```bash
 python main.py
 ```
 
+**Controls**
 
----
+| Key / mouse | Action |
+| --- | --- |
+| `Space` or left-click | Flap (the first flap starts the round) |
+| `1` / `E`, `2` / `M`, `3` / `H` | On Game Over: play again on Easy / Medium / Hard |
+| `Space` / `Enter` | On Game Over: replay on the same difficulty |
+| `Esc` / `Q` | On Game Over: quit |
 
-## Tasks to Complete
+The difficulty and Quit buttons on the Game Over screen can also be clicked.
 
-Each task must be completed using an iterative process involving LLM suggestions and your critical code review.
+## What was changed
 
-### Task 1: Refine Collision Detection
+### Task 1 – Refine collision detection (bug fix)
+**Problem:** collision only tested the bird's single *centre point* against the pipe rectangles, so the bird could visibly overlap a pipe's edge or corner and survive. This got worse as pipe speed increased.
+**Fix:** `Pipe.collides_with_circle()` does exact circle-vs-rectangle maths (closest point on the rectangle to the bird's centre, compared with the radius). The engine also splits each frame's movement into sub-steps of at most 2 px. Because of this, a fast pipe or a fast fall can't jump past an edge between frames.
 
-> The bird sometimes clips the edge of a pipe without dying, especially as pipe speed increases. Investigate and enhance collision accuracy so hits are detected consistently.
+### Task 2 – Game Over screen
+Replaced the `print("Game over! ...")` to the console with an on-screen Game Over panel showing the final score. The game freezes behind a dimmed overlay and waits for input. Input is ignored for ~0.5 s after dying so a late flap doesn't skip the screen.
 
-### Task 2: Implement Game Over Condition
+### Task 3 – Replay with difficulty
+The Game Over screen offers **Easy / Medium / Hard** or **Quit**:
 
-> Add a screen that displays the final score once the bird hits the ground, ceiling, or a pipe, then gracefully waits for input instead of just printing to the console.
+| Difficulty | Pipe speed | Gap | Spawn interval |
+| --- | --- | --- | --- |
+| Easy | 3 px/frame | 190 px | 110 frames |
+| Medium (original) | 4 px/frame | 150 px | 90 frames |
+| Hard | 6 px/frame | 120 px | 70 frames |
 
+The current difficulty is shown in the top-right corner during play.
 
-### Task 3: Add Replay Option
+### Task 4 – Sound feedback
+`game/sounds.py` makes three short 8-bit style sound effects in code, so the game needs no audio files:
+- **Flap:** a short rising chirp
+- **Score** (passing a pipe): a two-note ding
+- **Death:** a falling buzz, played once
 
-> After Game Over, allow the user to play again by choosing a difficulty (Easy, Medium, or Hard pipe speed/gap), or exit.
+If the computer has no audio device, the game runs silently instead of crashing.
 
+### Extra fix – bird died before the player could react
+In the original game the round started the moment the window opened. The bird hit the ground in about 0.6 s, often before the window even had keyboard focus. The game now shows a **"Get Ready"** screen with the bird hovering in place. Gravity and pipes start only on the first flap, including after every replay.
 
-### Task 4: Add Sound Feedback
+## Commits
 
-> Add basic sound effects for flapping, passing a pipe (scoring), and dying.
+1. Add Flappy Bird starter code (unchanged)
+2. Task 1: fix pipe collision detection
+3. Task 2: add Game Over screen
+4. Task 3: add replay with difficulty selection
+5. Task 4: add sound effects for flap, score and death
+6. Fix bird dying before the player can react (Get Ready screen)
 
-
----
-
-## Expected Behavior
-
-- Bird flaps upward on `Space` or mouse click, and falls due to gravity otherwise
-- Pipes spawn at a regular interval and scroll from right to left with a randomized gap
-- Score increases by one each time the bird passes a pipe
-- Game ends when the bird hits the ground, the ceiling, or a pipe
-
----
-
-## Folder Structure
+## Folder structure
 
 ```
-flappybird-main/
+Lab-4/
 ├── main.py
 ├── requirements.txt
+├── README.md
 ├── game/
-│   ├── game_engine.py
+│   ├── game_engine.py   # game loop logic, collision, Game Over + replay menu
 │   ├── bird.py
-│   └── pipe.py
-└── README.md
+│   ├── pipe.py          # + circle-vs-rect collision
+│   └── sounds.py        # new: synthesised sound effects
+├── videos/
+│   ├── before.mp4
+│   └── after.mp4
+└── chat_history.pdf
 ```
-
----
-
-## Submission Checklist
-
-Submission is only the following three things:
-
-- [] A 10-second video of gameplay **before** your changes, showing the bug/broken behavior
-- [] A 10-second video of gameplay **after** your changes, showing the bug fixed and the new features working
-- [] The Chat/LLM used page link, with the complete chat history
