@@ -29,6 +29,9 @@ def main():
                 running = False
             engine.handle_event(event)
 
+        if engine.quit_requested:  # player chose "Quit" on the Game Over screen
+            running = False
+
         engine.handle_input()
         engine.update()
         engine.render(SCREEN)
